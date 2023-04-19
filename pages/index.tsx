@@ -10,8 +10,8 @@ export default function Home({ pageData }) {
     <>
       <Link href="pricing">Click Me</Link>
       {pageData.page.sectionsCollection.items.map((section) => {
-        const experiences = section.ntExperiencesCollection.items
-          .map((experience) => {
+        const experiences = section.ntExperiencesCollection.items.map(
+          (experience) => {
             return {
               name: experience.ntName,
               type: experience.ntType,
@@ -31,20 +31,27 @@ export default function Home({ pageData }) {
                 };
               }),
             };
-          })
+          }
+        );
+
+        const mappedExperiences = experiences
           .filter(ExperienceMapper.isExperienceEntry)
           .map(ExperienceMapper.mapExperience);
 
-        console.log(`Experiences:${JSON.stringify(experiences, null, 2)}`);
-
         return (
-          <Experience
-            {...section}
-            key={section.sys.id}
-            id={section.sys.id}
-            component={Section}
-            experiences={experiences}
-          />
+          <>
+            <h1>Experiences Prior to Mapping</h1>
+            <pre>{JSON.stringify(experiences, null, 2)}</pre>
+            <h1>Experiences After Mapping</h1>
+            <pre>{JSON.stringify(mappedExperiences, null, 2)}</pre>
+            <Experience
+              {...section}
+              key={section.sys.id}
+              id={section.sys.id}
+              component={Section}
+              experiences={mappedExperiences}
+            />
+          </>
         );
       })}
       <button
@@ -117,8 +124,6 @@ export async function getStaticProps() {
   }
 
   const pageData = await getPageData();
-
-  console.log(JSON.stringify(pageData, null, 2));
 
   return {
     props: {
