@@ -1,4 +1,4 @@
-export default function Section(props) {
+export default function Hero(props) {
   return (
     <div>
       <h1>{props.title}</h1>
