@@ -9,8 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ninetailed/experience.js-next": "^3.2.2",
-    "@ninetailed/experience.js-utils": "^3.2.2",
+    "@ninetailed/experience.js-next": "6.3.0",
+    "@ninetailed/experience.js-plugin-preview": "^6.3.0",
+    "@ninetailed/experience.js-utils": "6.3.0",
     "@types/node": "18.14.2",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
