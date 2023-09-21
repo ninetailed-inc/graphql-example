@@ -6,7 +6,7 @@ import type { AppProps } from "next/app";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <NinetailedProvider
-      clientId="40edeb83-8a84-432c-8c99-0e1327c50ff9"
+      clientId={process.env.NEXT_PUBLIC_NINETAILED_CLIENT_ID || ""}
       plugins={[
         new NinetailedPreviewPlugin({
           experiences: pageProps.allExperiences || [],

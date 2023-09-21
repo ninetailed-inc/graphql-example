@@ -1,5 +1,5 @@
 import { request, gql } from "graphql-request";
-import { parseExperience, filterAndMapExperiences } from "../lib/helpers";
+import { filterAndMapExperiences, mapAudiences } from "../lib/helpers";
 
 const homepageContentQuery = gql`
   fragment SysId on Entry {
@@ -59,6 +59,8 @@ const allExperiencesQuery = gql`
         ntType
         ntAudience {
           ntAudienceId
+          ntName
+          ntDescription
         }
         ntDescription
         ntVariantsCollection(limit: 10) {
@@ -80,8 +82,9 @@ const allAudiencesQuery = gql`
   {
     ntAudienceCollection(limit: 100, preview: true) {
       items {
-        id: ntAudienceId
-        name: ntName
+        ntAudienceId
+        ntName
+        ntDescription
       }
     }
   }
@@ -89,9 +92,9 @@ const allAudiencesQuery = gql`
 
 export async function getHomepageData() {
   return request({
-    url: "https://graphql.contentful.com/content/v1/spaces/cjvmtrvzlutl",
+    url: `https://graphql.contentful.com/content/v1/spaces/${process.env.CTFL_SPACE_ID}`,
     requestHeaders: {
-      Authorization: "Bearer MCMrmDnIMSBjFL2cAkHKb1Ke8_cjc7m77cmCSUKKHz4",
+      Authorization: `Bearer ${process.env.CTFL_API_KEY}`,
       "Content-Type": "application/json",
     },
     document: homepageContentQuery,
@@ -100,9 +103,9 @@ export async function getHomepageData() {
 
 export async function getAllExperiences() {
   const rawExperiences = await request({
-    url: "https://graphql.contentful.com/content/v1/spaces/cjvmtrvzlutl",
+    url: `https://graphql.contentful.com/content/v1/spaces/${process.env.CTFL_SPACE_ID}`,
     requestHeaders: {
-      Authorization: "Bearer MCMrmDnIMSBjFL2cAkHKb1Ke8_cjc7m77cmCSUKKHz4",
+      Authorization: `Bearer ${process.env.CTFL_API_KEY}`,
       "Content-Type": "application/json",
     },
     document: allExperiencesQuery,
@@ -113,13 +116,13 @@ export async function getAllExperiences() {
 
 export async function getAllAudiences() {
   const rawAudiences = await request({
-    url: "https://graphql.contentful.com/content/v1/spaces/cjvmtrvzlutl",
+    url: `https://graphql.contentful.com/content/v1/spaces/${process.env.CTFL_SPACE_ID}`,
     requestHeaders: {
-      Authorization: "Bearer MCMrmDnIMSBjFL2cAkHKb1Ke8_cjc7m77cmCSUKKHz4",
+      Authorization: `Bearer ${process.env.CTFL_API_KEY}`,
       "Content-Type": "application/json",
     },
     document: allAudiencesQuery,
   });
 
-  return rawAudiences.ntAudienceCollection.items;
+  return mapAudiences(rawAudiences.ntAudienceCollection.items);
 }
