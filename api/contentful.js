@@ -8,10 +8,10 @@ const homepageContentQuery = gql`
     }
   }
 
-  fragment SectionFields on Section {
+  fragment BannerFields on ComponentHeroBanner {
     ...SysId
-    title
-    subheading
+    internalName
+    headline
   }
 
   fragment NtExperienceFields on NtExperience {
@@ -24,19 +24,17 @@ const homepageContentQuery = gql`
     }
   }
 
-  query {
-    page(id: "6FBbwAY8QDXL8MtWNZ2RbT") {
+  query ($id: String!) {
+    pageLanding(id: $id) {
       ...SysId
-      sectionsCollection(limit: 10) {
-        items {
-          ...SectionFields
-          ntExperiencesCollection(limit: 10) {
-            items {
-              ...NtExperienceFields
-              ntVariantsCollection(limit: 10) {
-                items {
-                  ...SectionFields
-                }
+      banner {
+        ...BannerFields
+        ntExperiencesCollection(limit: 10) {
+          items {
+            ...NtExperienceFields
+            ntVariantsCollection(limit: 10) {
+              items {
+                ...BannerFields
               }
             }
           }
@@ -62,7 +60,6 @@ const allExperiencesQuery = gql`
           ntName
           ntDescription
         }
-        ntDescription
         ntVariantsCollection(limit: 10) {
           items {
             # This might work to get all IDs without having to define each variant content type
@@ -92,18 +89,23 @@ const allAudiencesQuery = gql`
 
 export async function getHomepageData() {
   return request({
-    url: `https://graphql.contentful.com/content/v1/spaces/${process.env.CTFL_SPACE_ID}`,
+    url: `https://graphql.contentful.com/content/v1/spaces/${
+      process.env.CTFL_SPACE_ID
+    }/environments/${process.env.CTFL_ENV || "master"}`,
     requestHeaders: {
       Authorization: `Bearer ${process.env.CTFL_API_KEY}`,
       "Content-Type": "application/json",
     },
+    variables: { id: process.env.HOMEPAGE_ENTRY_ID },
     document: homepageContentQuery,
   });
 }
 
 export async function getAllExperiences() {
   const rawExperiences = await request({
-    url: `https://graphql.contentful.com/content/v1/spaces/${process.env.CTFL_SPACE_ID}`,
+    url: `https://graphql.contentful.com/content/v1/spaces/${
+      process.env.CTFL_SPACE_ID
+    }/environments/${process.env.CTFL_ENV || "master"}`,
     requestHeaders: {
       Authorization: `Bearer ${process.env.CTFL_API_KEY}`,
       "Content-Type": "application/json",
@@ -116,7 +118,9 @@ export async function getAllExperiences() {
 
 export async function getAllAudiences() {
   const rawAudiences = await request({
-    url: `https://graphql.contentful.com/content/v1/spaces/${process.env.CTFL_SPACE_ID}`,
+    url: `https://graphql.contentful.com/content/v1/spaces/${
+      process.env.CTFL_SPACE_ID
+    }/environments/${process.env.CTFL_ENV || "master"}`,
     requestHeaders: {
       Authorization: `Bearer ${process.env.CTFL_API_KEY}`,
       "Content-Type": "application/json",

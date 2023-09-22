@@ -1,25 +1,19 @@
-import Hero from "@/components/Hero";
+import Banner from "@/components/Banner";
 import { Experience } from "@ninetailed/experience.js-next";
 import { filterAndMapExperiences } from "@/lib/helpers";
 
 export default function Contentful({ pageData }) {
+  const { banner } = pageData.pageLanding;
+  const mappedExperiences = filterAndMapExperiences(
+    banner.ntExperiencesCollection.items
+  );
   return (
-    <>
-      {pageData.page.sectionsCollection.items.map((section) => {
-        const mappedExperiences = filterAndMapExperiences(
-          section.ntExperiencesCollection.items
-        );
-
-        return (
-          <Experience
-            {...section}
-            id={section.sys.id}
-            key={section.sys.id}
-            component={Hero}
-            experiences={mappedExperiences}
-          />
-        );
-      })}
-    </>
+    <Experience
+      {...banner}
+      id={banner.sys.id}
+      key={banner.sys.id}
+      component={Banner}
+      experiences={mappedExperiences}
+    />
   );
 }
