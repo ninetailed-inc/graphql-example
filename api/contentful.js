@@ -6,12 +6,17 @@ const homepageContentQuery = gql`
     sys {
       id
     }
+    __typename
   }
 
-  fragment SectionFields on Section {
+  fragment HeroEntry on Hero {
     ...SysId
-    title
-    subheading
+    internalName
+  }
+
+  fragment CtaEntry on Cta {
+    ...SysId
+    internalName
   }
 
   fragment NtExperienceFields on NtExperience {
@@ -21,25 +26,33 @@ const homepageContentQuery = gql`
     ntConfig
     ntAudience {
       ntAudienceId
+      ntName
     }
   }
 
-  query {
-    page(id: "6FBbwAY8QDXL8MtWNZ2RbT") {
+  fragment NinetailedHero on Hero {
+    ...HeroEntry
+    ntExperiencesCollection(limit: 10) {
+      items {
+        ...NtExperienceFields
+        ntVariantsCollection(limit: 10) {
+          items {
+            ...HeroEntry
+            ...SysId
+          }
+        }
+      }
+    }
+  }
+
+  query NinetailedPageQuery($pageId: String!) {
+    page(id: $pageId) {
       ...SysId
       sectionsCollection(limit: 10) {
         items {
-          ...SectionFields
-          ntExperiencesCollection(limit: 10) {
-            items {
-              ...NtExperienceFields
-              ntVariantsCollection(limit: 10) {
-                items {
-                  ...SectionFields
-                }
-              }
-            }
-          }
+          ...NinetailedHero
+          ...CtaEntry
+          ...SysId
         }
       }
     }
@@ -65,11 +78,11 @@ const allExperiencesQuery = gql`
         ntDescription
         ntVariantsCollection(limit: 10) {
           items {
-            # This might work to get all IDs without having to define each variant content type
             ... on Entry {
               sys {
                 id
               }
+              __typename
             }
           }
         }
@@ -90,15 +103,20 @@ const allAudiencesQuery = gql`
   }
 `;
 
-export async function getHomepageData() {
-  return request({
+export async function getContentfulPageData(pageId) {
+  const data = await request({
     url: `https://graphql.contentful.com/content/v1/spaces/${process.env.CTFL_SPACE_ID}`,
+    document: homepageContentQuery,
+    variables: {
+      pageId,
+    },
     requestHeaders: {
       Authorization: `Bearer ${process.env.CTFL_API_KEY}`,
       "Content-Type": "application/json",
     },
-    document: homepageContentQuery,
   });
+
+  return data;
 }
 
 export async function getAllExperiences() {

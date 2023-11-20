@@ -6,19 +6,24 @@ export default function Contentful({ pageData }) {
   return (
     <>
       {pageData.page.sectionsCollection.items.map((section) => {
-        const mappedExperiences = filterAndMapExperiences(
-          section.ntExperiencesCollection.items
-        );
-
-        return (
-          <Experience
-            {...section}
-            id={section.sys.id}
-            key={section.sys.id}
-            component={Hero}
-            experiences={mappedExperiences}
-          />
-        );
+        // Example
+        if (section.__typename === "Hero") {
+          console.log(section.ntExperiencesCollection.items);
+          const mappedExperiences =
+            section?.ntExperiencesCollection &&
+            section.ntExperiencesCollection.items.length
+              ? filterAndMapExperiences(section.ntExperiencesCollection.items)
+              : [];
+          return (
+            <Experience
+              {...section}
+              id={section.sys.id}
+              key={section.sys.id}
+              component={Hero}
+              experiences={mappedExperiences}
+            />
+          );
+        }
       })}
     </>
   );

@@ -4,7 +4,7 @@ import Link from "next/link";
 import {
   getAllAudiences,
   getAllExperiences,
-  getHomepageData,
+  getContentfulPageData,
 } from "@/api/contentful";
 import { getContentstackPageData } from "@/api/contentstack";
 
@@ -32,7 +32,7 @@ export default function Home({ pageData }: { pageData: any }) {
 
 export async function getStaticProps() {
   const [pageData, allExperiences, allAudiences] = await Promise.all([
-    getHomepageData(),
+    getContentfulPageData("74xg8efOkegDhekWJuiLsV"),
     getAllExperiences(),
     getAllAudiences(),
   ]);
